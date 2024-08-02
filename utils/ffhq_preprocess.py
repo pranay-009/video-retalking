@@ -138,3 +138,26 @@ class Croper:
         return img_np_list, crop, quad
 
 
+
+    def crop_version2(self, img_np_list, xsize=512):    # first frame for all video
+        idx = 0
+        img_list = []
+        while idx < len(img_np_list)//2 :   # TODO 
+            img_np = img_np_list[idx]
+            lm = self.get_landmark(img_np)
+            if lm is not None:  
+                break   # can detect face
+            idx += 1
+        if lm is None:
+            return None
+        
+        crop, quad = self.align_face(img=Image.fromarray(img_np), lm=lm, output_size=xsize)
+        clx, cly, crx, cry = crop
+        lx, ly, rx, ry = quad
+        lx, ly, rx, ry = int(lx), int(ly), int(rx), int(ry)
+        for _i in range(len(img_np_list)):
+            _inp = img_np_list[_i]
+            img = _inp[cly:cry, clx:crx]
+            img = img[ly:ry, lx:rx]
+            img_list.append(img)
+        return img_list, crop, quad
