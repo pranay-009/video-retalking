@@ -15,6 +15,28 @@ class KeypointExtractor():
     def __init__(self):
         self.detector = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D)   
 
+
+    def extract_keypoint_v2(self, images, name=None, info=True):
+        keypoints = []
+        if info:
+            i_range = tqdm(images,desc='landmark Det:')
+        else:
+            i_range = images
+
+        for image in i_range:
+            current_kp = self.extract_keypoint(image)
+            print(current_kp)
+            print("mean",np.mean(current_kp))
+            if np.mean(current_kp) == -1 and keypoints:
+                keypoints.append(keypoints[-1])
+            else:
+                keypoints.append(current_kp[None])
+
+        keypoints = np.concatenate(keypoints, 0)
+        np.savetxt(os.path.splitext(name)[0]+'.txt', keypoints.reshape(-1))
+        return keypoints 
+    
+    
     def extract_keypoint(self, images, name=None, info=True):
         if isinstance(images, list):
             keypoints = []
