@@ -22,11 +22,8 @@ class KeypointExtractor():
             i_range = tqdm(images,desc='landmark Det:')
         else:
             i_range = images
-
         for image in i_range:
             current_kp = self.extract_keypoint(image)
-            print(current_kp)
-            print("mean",np.mean(current_kp))
             if np.mean(current_kp) == -1 and keypoints:
                 keypoints.append(keypoints[-1])
             else:
@@ -36,7 +33,7 @@ class KeypointExtractor():
         np.savetxt(os.path.splitext(name)[0]+'.txt', keypoints.reshape(-1))
         return keypoints 
     
-    
+
     def extract_keypoint(self, images, name=None, info=True):
         if isinstance(images, list):
             keypoints = []
